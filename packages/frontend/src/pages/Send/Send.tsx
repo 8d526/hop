@@ -12,7 +12,13 @@ import Network from 'src/models/Network'
 import { useWeb3Context } from 'src/contexts/Web3Context'
 import { useApp } from 'src/contexts/AppContext'
 import logger from 'src/logger'
-import { commafy, isL1ToL2, findMatchingBridge, sanitizeNumericalString, toTokenDisplay } from 'src/utils'
+import {
+  commafy,
+  isL1ToL2,
+  findMatchingBridge,
+  sanitizeNumericalString,
+  toTokenDisplay,
+} from 'src/utils'
 import useSendData from 'src/pages/Send/useSendData'
 import AmmDetails from 'src/components/AmmDetails'
 import FeeDetails from 'src/components/FeeDetails'
@@ -32,7 +38,7 @@ import {
   useQueryParams,
   useNeedsTokenForFee,
   useBalance,
-  useNativeTokenMaxValue,
+  useEstimateTxCost,
 } from 'src/hooks'
 import { ButtonsWrapper } from 'src/components/buttons/ButtonsWrapper'
 import { ChainSlug } from '@hop-protocol/sdk'
@@ -169,7 +175,7 @@ const Send: FC = () => {
     return true
   }, [fromBalance, fromTokenAmountBN])
 
-  const { estimateSend } = useNativeTokenMaxValue(fromNetwork)
+  const { estimateSend } = useEstimateTxCost(fromNetwork)
 
   useEffect(() => {
     let isSubscribed = true
