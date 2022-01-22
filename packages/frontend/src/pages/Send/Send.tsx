@@ -90,8 +90,6 @@ const Send: FC = () => {
     toNetwork
   )
 
-  console.log(`unsupportedAsset:`, unsupportedAsset)
-
   // Get token balances for both networks
   const { balance: fromBalance, loading: loadingFromBalance } = useBalance(
     sourceToken,
@@ -193,7 +191,6 @@ const Send: FC = () => {
   useEffect(() => {
     if (unsupportedAsset) {
       const { chain, tokenSymbol } = unsupportedAsset
-      console.log(`tokenSymbol:`, tokenSymbol)
       setError(`${tokenSymbol} is currently not supported on ${chain}`)
     } else if (error) {
       setError('')
