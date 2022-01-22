@@ -1,37 +1,31 @@
-import { useState, useEffect } from 'react'
 import { HopBridge } from '@hop-protocol/sdk'
-import { BigNumber } from 'ethers'
-import { useInterval } from 'react-use'
-import logger from 'src/logger'
-import { formatError } from 'src/utils'
+import { useQuery } from 'react-query'
 
 const useAvailableLiquidity = (
   bridge?: HopBridge,
   sourceChain?: string,
   destinationChain?: string
 ) => {
-  const [availableLiquidity, setAvailableLiquidity] = useState<BigNumber>()
+  const queryKey = `availableLiquidity:${bridge?.network}:${sourceChain}:${destinationChain}`
 
-  const updateAvailableLiquidity = async () => {
-    try {
-      if (bridge && sourceChain && destinationChain) {
-        const liquidity = await bridge.getFrontendAvailableLiquidity(sourceChain, destinationChain)
-        setAvailableLiquidity(liquidity)
+  const { isLoading, data, error } = useQuery(
+    [queryKey, bridge?.network, sourceChain, destinationChain],
+    async () => {
+      if (bridge?.network && sourceChain && destinationChain) {
+        return bridge.getFrontendAvailableLiquidity(sourceChain, destinationChain)
       }
-    } catch (err: any) {
-      logger.error(formatError(err))
-      setAvailableLiquidity(undefined)
+    },
+    {
+      enabled: !!bridge?.network && !!sourceChain && !!destinationChain,
+      refetchInterval: 15e3,
     }
+  )
+
+  return {
+    availableLiquidity: data,
+    isLoading,
+    error,
   }
-
-  useEffect(() => {
-    setAvailableLiquidity(undefined)
-    updateAvailableLiquidity()
-  }, [bridge, sourceChain, destinationChain])
-
-  useInterval(updateAvailableLiquidity, 15e3)
-
-  return { availableLiquidity }
 }
 
 export default useAvailableLiquidity

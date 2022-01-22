@@ -37,6 +37,7 @@ import {
   useSufficientBalance,
 } from 'src/hooks'
 import { ButtonsWrapper } from 'src/components/buttons/ButtonsWrapper'
+import useAvailableLiquidity from './useAvailableLiquidity'
 
 const Send: FC = () => {
   const styles = useSendStyles()
@@ -108,6 +109,13 @@ const Send: FC = () => {
     }
   }, [sourceToken, fromTokenAmount])
 
+  // Get available liquidity
+  const { availableLiquidity } = useAvailableLiquidity(
+    selectedBridge,
+    fromNetwork?.slug,
+    toNetwork?.slug
+  )
+
   // Use send data for tx
   const {
     amountOut,
@@ -119,18 +127,10 @@ const Send: FC = () => {
     adjustedDestinationTxFee,
     totalFee,
     requiredLiquidity,
-    availableLiquidity,
     loading: loadingSendData,
     estimatedReceived,
     error: sendDataError,
-  } = useSendData(
-    sourceToken,
-    slippageTolerance,
-    fromNetwork,
-    toNetwork,
-    fromTokenAmountBN,
-    selectedBridge
-  )
+  } = useSendData(sourceToken, slippageTolerance, fromNetwork, toNetwork, fromTokenAmountBN)
 
   // Set toAmount
   useEffect(() => {
